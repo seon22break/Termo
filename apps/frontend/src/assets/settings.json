@@ -1,0 +1,21 @@
+{
+  "settings": [
+    {
+      "key": "language",
+      "label": "@settingsKeys.language",
+      "description": "@settingsKeys.language_description",
+      "type": "select",
+      "defaultValue": "en",
+      "options": [
+        {
+          "value": "es",
+          "label": "@languages.es"
+        },
+        {
+          "value": "en",
+          "label": "@languages.en"
+        }
+      ]
+    }
+  ]
+}

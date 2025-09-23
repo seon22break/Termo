@@ -1,0 +1,87 @@
+use backend_lib::connection::application::commands::update_connection;
+use backend_lib::repository::ConnectionRepository;
+use backend_lib::connection::domain::Connection;
+
+struct MockRepo {
+    should_fail: bool,
+    exists: bool,
+}
+
+impl ConnectionRepository for MockRepo {
+    fn create(&self, _conn: &Connection) -> Result<Connection, String> { unimplemented!() }
+    fn get_all(&self) -> Result<Vec<Connection>, rusqlite::Error> { unimplemented!() }
+    fn get_by_id(&self, id: &str) -> Result<Option<Connection>, rusqlite::Error> {
+        if self.exists && !id.is_empty() {
+            Ok(Some(Connection {
+                id: id.to_string(),
+                host: "localhost".to_string(),
+                port: 22,
+                display_name: "Test".to_string(),
+                user: "user".to_string(),
+                password: "pass".to_string(),
+                sshkey: "".to_string(),
+                icon: "".to_string(),
+                folder_id: "".to_string(),
+            }))
+        } else {
+            Ok(None)
+        }
+    }
+    fn update(&self, _conn: &Connection) -> Result<(), String> {
+        if self.should_fail {
+            Err("Error simulado de base de datos".to_string())
+        } else {
+            Ok(())
+        }
+    }
+    fn delete(&self, _id: &str) -> Result<(), String> { unimplemented!() }
+}
+
+fn sample_connection(id: &str) -> Connection {
+    Connection {
+        id: id.to_string(),
+        host: "localhost".to_string(),
+        port: 22,
+        display_name: "Test".to_string(),
+        user: "user".to_string(),
+        password: "pass".to_string(),
+        sshkey: "".to_string(),
+        icon: "".to_string(),
+        folder_id: "".to_string(),
+    }
+}
+
+#[test]
+fn test_update_connection_success() {
+    let repo = MockRepo { should_fail: false, exists: true };
+    let conn = sample_connection("id123");
+    let result = update_connection(&repo, &conn);
+    assert!(result.is_ok());
+}
+
+#[test]
+fn test_update_connection_id_vacio() {
+    let repo = MockRepo { should_fail: false, exists: true };
+    let conn = sample_connection("");
+    let result = update_connection(&repo, &conn);
+    assert!(result.is_err());
+    assert_eq!(result.unwrap_err(), "El id no puede estar vacío");
+}
+
+#[test]
+fn test_update_connection_db_error() {
+    let repo = MockRepo { should_fail: true, exists: true };
+    let conn = sample_connection("id123");
+    let result = update_connection(&repo, &conn);
+    assert!(result.is_err());
+    assert_eq!(result.unwrap_err(), "Error simulado de base de datos");
+}
+
+#[test]
+fn test_update_connection_no_existe() {
+    let repo = MockRepo { should_fail: false, exists: false };
+    let conn = sample_connection("id_no_existe");
+    let result = update_connection(&repo, &conn);
+    assert!(result.is_err());
+    assert_eq!(result.unwrap_err(), "No existe una conexión con ese id");
+}

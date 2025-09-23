@@ -1,0 +1,137 @@
+use backend_lib::connection::application::commands::add_connection;
+use backend_lib::connection::domain::Connection;
+use backend_lib::repository::ConnectionRepository;
+
+struct MockRepo {
+    should_fail: bool,
+}
+
+impl ConnectionRepository for MockRepo {
+    fn create(&self, conn: &Connection) -> Result<Connection, String> {
+        if self.should_fail {
+            Err("Error simulado de base de datos".to_string())
+        } else {
+            Ok(conn.clone())
+        }
+    }
+    fn get_all(&self) -> Result<Vec<Connection>, rusqlite::Error> { unimplemented!() }
+    fn get_by_id(&self, _id: &str) -> Result<Option<Connection>, rusqlite::Error> { unimplemented!() }
+    fn update(&self, _conn: &Connection) -> Result<(), String> { unimplemented!() }
+    fn delete(&self, _id: &str) -> Result<(), String> { unimplemented!() }
+}
+
+#[test]
+fn test_add_connection_success_password() {
+    let repo = MockRepo { should_fail: false };
+    let result = add_connection(
+        &repo,
+        "127.0.0.1".to_string(),
+        2222,
+        "Test Connection".to_string(),
+        "testuser".to_string(),
+        "testpass".to_string(),
+        "".to_string(),
+        "icon1".to_string(),
+        "folder1".to_string(),
+    );
+    assert!(result.is_ok());
+    let conn = result.unwrap();
+    // Ahora la contraseña está encriptada y el nonce en sshkey
+    assert!(!conn.password.is_empty());
+    assert!(!conn.sshkey.is_empty());
+    assert_ne!(conn.password, "testpass");
+    assert_eq!(conn.icon, "icon1");
+    assert_eq!(conn.folder_id, "folder1");
+}
+
+#[test]
+fn test_add_connection_success_sshkey() {
+    let repo = MockRepo { should_fail: false };
+    let result = add_connection(
+        &repo,
+        "localhost".to_string(),
+        22,
+        "SSH Connection".to_string(),
+        "user".to_string(),
+        "".to_string(),
+        "sshkeydata".to_string(),
+        "icon2".to_string(),
+        "folder2".to_string(),
+    );
+    assert!(result.is_ok());
+    let conn = result.unwrap();
+    assert_eq!(conn.password, "");
+    assert_eq!(conn.sshkey, "sshkeydata");
+}
+
+#[test]
+fn test_add_connection_both_password_and_sshkey() {
+    let repo = MockRepo { should_fail: false };
+    let result = add_connection(
+        &repo,
+        "localhost".to_string(),
+        22,
+        "Invalid".to_string(),
+        "user".to_string(),
+        "pass".to_string(),
+        "sshkey".to_string(),
+        "icon3".to_string(),
+        "folder3".to_string(),
+    );
+    assert!(result.is_err());
+    assert_eq!(result.unwrap_err(), "No puede tener password y sshkey a la vez");
+}
+
+#[test]
+fn test_add_connection_none_password_nor_sshkey() {
+    let repo = MockRepo { should_fail: false };
+    let result = add_connection(
+        &repo,
+        "localhost".to_string(),
+        22,
+        "Invalid".to_string(),
+        "user".to_string(),
+        "".to_string(),
+        "".to_string(),
+        "icon4".to_string(),
+        "folder4".to_string(),
+    );
+    assert!(result.is_err());
+    assert_eq!(result.unwrap_err(), "Debe tener al menos password o sshkey");
+}
+
+#[test]
+fn test_add_connection_db_error() {
+    let repo = MockRepo { should_fail: true };
+    let result = add_connection(
+        &repo,
+        "localhost".to_string(),
+        22,
+        "DB Error".to_string(),
+        "user".to_string(),
+        "pass".to_string(),
+        "".to_string(),
+        "icon5".to_string(),
+        "folder5".to_string(),
+    );
+    assert!(result.is_err());
+    assert_eq!(result.unwrap_err(), "Error simulado de base de datos");
+}
+
+#[test]
+fn test_add_connection_invalid_port() {
+    let repo = MockRepo { should_fail: false };
+    let result = add_connection(
+        &repo,
+        "localhost".to_string(),
+        0, // puerto inválido
+        "Invalid Port".to_string(),
+        "user".to_string(),
+        "pass".to_string(),
+        "".to_string(),
+        "icon6".to_string(),
+        "folder6".to_string(),
+    );
+    assert!(result.is_err());
+    assert_eq!(result.unwrap_err(), "Port is not valid".to_string());
+}

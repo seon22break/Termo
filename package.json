@@ -1,0 +1,26 @@
+{
+  "name": "Termo",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "pnpm --filter frontend run dev",
+    "build:frontend": "pnpm --filter frontend run build",
+    "build:backend": "pnpm --filter backend exec tauri build",
+    "build": "pnpm run build:frontend && pnpm run build:backend",
+    "start:backend": "pnpm --filter backend exec tauri dev",
+    "start": "pnpm run start:backend"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.12.4",
+  "devDependencies": {
+    "autoprefixer": "^10.4.21",
+    "concurrently": "^9.2.0"
+  },
+  "dependencies": {
+    "@tauri-apps/api": "^2.6.0"
+  }
+}

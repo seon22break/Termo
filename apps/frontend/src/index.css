@@ -1,0 +1,20 @@
+@import "tailwindcss";
+
+:root {
+  --bg-term: #111;
+  --bg-menu: #1a1a1a;
+}
+
+/* Bloquear scroll global */
+html, body {
+  overflow: hidden;
+  height: 100vh;
+  width: 100vw;
+}
+
+/* Asegurar que el root div también no tenga scroll */
+#root {
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+}
