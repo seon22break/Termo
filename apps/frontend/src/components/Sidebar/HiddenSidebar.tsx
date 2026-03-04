@@ -12,7 +12,7 @@ const HiddenSidebar: React.FC<HiddenSidebarProps> = ({ onShowSidebar, style }) =
   
   return (
     <aside
-      className="bg-zinc-900 flex flex-col items-center justify-start h-screen border-r border-[#1a1a1a] transition-all duration-300"
+      className="bg-zinc-900 flex flex-col items-center justify-start h-full border-r border-[#1a1a1a] transition-all duration-300"
       style={style}
     >
       <button

@@ -68,7 +68,7 @@ const WelcomePage: React.FC<WelcomePageProps> = ({ onSuccess }) => {
 
   if (checkingCompatibility) {
     return (
-      <div className="flex flex-col items-center justify-center h-screen w-screen bg-zinc-900">
+      <div className="flex flex-col items-center justify-center h-full w-full bg-zinc-900">
         <div className="flex flex-col items-center">
           <div className="relative w-28 h-28 mb-1 flex-shrink-0">
             <img src="/icon_termo.webp" alt="icon" className="w-25 h-25 object-contain" />
@@ -85,7 +85,7 @@ const WelcomePage: React.FC<WelcomePageProps> = ({ onSuccess }) => {
 
   if (isCompatible === false) {
     return (
-      <div className="flex flex-col items-center justify-center h-screen w-screen bg-zinc-900">
+      <div className="flex flex-col items-center justify-center h-full w-full bg-zinc-900">
         <div className="flex flex-col items-center max-w-md p-8 text-center">
           <div className="relative w-28 h-28 mb-1 flex-shrink-0">
             <img src="/icon_termo.webp" alt="icon" className="w-25 h-25 object-contain opacity-50" />
@@ -112,7 +112,7 @@ const WelcomePage: React.FC<WelcomePageProps> = ({ onSuccess }) => {
   }
 
   return (
-    <div className="flex flex-col items-center justify-center h-screen w-screen bg-zinc-900 pb-20 pt-10">
+    <div className="flex flex-col items-center justify-center h-full w-full bg-zinc-900 pb-20 pt-10">
       <div className="flex flex-col items-center w-full max-w-md p-8 rounded-lg">
         <div className="flex flex-col items-center mb-6">
           <div className="relative w-28 h-28 mb-1 flex-shrink-0">
