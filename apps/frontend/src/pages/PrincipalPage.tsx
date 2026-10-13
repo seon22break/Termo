@@ -11,7 +11,7 @@ const PrincipalPage = ({ children }: PrincipalPageProps) => {
   const { openTabs, activeTabId } = usePageSystem();
 
   return (
-    <div className="flex h-screen w-screen">
+    <div className="flex h-full w-full">
       {/* Sidebar */}
       <div className="h-full">
         <Sidebar />

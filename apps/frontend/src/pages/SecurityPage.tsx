@@ -39,7 +39,7 @@ const SecurityPage: React.FC<SecurityPageProps> = ({
   };
 
   return (
-    <div className="flex h-screen w-screen bg-zinc-900 items-center justify-center">
+    <div className="flex h-full w-full bg-zinc-900 items-center justify-center">
       <div className="flex flex-col items-center space-y-6 p-8 max-w-md w-full">
         <div className="flex justify-center">
           <img 

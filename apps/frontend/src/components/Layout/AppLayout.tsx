@@ -7,6 +7,7 @@ import PrincipalPage from "../../pages/PrincipalPage";
 import SecurityPage from "../../pages/SecurityPage";
 import WelcomePage from "../../pages/WelcomePage";
 import FolderModal from "../Modal/FolderModal";
+import TitleBar from "../TitleBar/TitleBar";
 
 interface AppLayoutProps {
   children?: ReactNode;
@@ -43,9 +44,12 @@ const AppLayout = ({ children, securityProps, welcomeProps }: AppLayoutProps) =>
   };
 
   return (
-    <>
-      {renderPage()}
-      
+    <div className="flex flex-col h-screen w-screen">
+      <TitleBar />
+      <div className="flex-1 overflow-hidden">
+        {renderPage()}
+      </div>
+
       {/* Global Folder Modal */}
       <FolderModal
         isOpen={isFolderModalOpen}
@@ -53,7 +57,7 @@ const AppLayout = ({ children, securityProps, welcomeProps }: AppLayoutProps) =>
         folder={null}
         title={t.search.newFolder}
       />
-    </>
+    </div>
   );
 };
 

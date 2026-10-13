@@ -53,7 +53,7 @@ const Sidebar = () => {
 
   return (
     <aside
-      className="bg-zinc-900 flex flex-col h-screen border-r border-[#1a1a1a] transition-all duration-300"
+      className="bg-zinc-900 flex flex-col h-full border-r border-[#1a1a1a] transition-all duration-300"
       style={sidebarStyle}
     >
       {sidebarOculto ? (
