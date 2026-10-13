@@ -140,8 +140,47 @@ const Terminal: React.FC<TerminalProps> = ({ connection, onClose }) => {
     el.addEventListener('click', () => term.current?.focus());
     setTimeout(() => term.current?.focus(), 100);
 
+    // Copy: Ctrl+Shift+C (Linux/Windows) or Cmd+C (macOS)
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const isCopy =
+        (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'c') ||
+        (e.metaKey && e.key.toLowerCase() === 'c');
+      const isPaste =
+        (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'v') ||
+        (e.metaKey && e.key.toLowerCase() === 'v');
+
+      if (isCopy) {
+        const selection = term.current?.getSelection();
+        if (selection) {
+          e.preventDefault();
+          navigator.clipboard.writeText(selection).catch(console.error);
+        }
+      } else if (isPaste) {
+        e.preventDefault();
+        navigator.clipboard.readText().then((text) => {
+          if (text && term.current) {
+            term.current.paste(text);
+          }
+        }).catch(console.error);
+      }
+    };
+
+    // Paste via DOM paste event (right-click paste, Ctrl+V in WebView)
+    const handlePaste = (e: ClipboardEvent) => {
+      e.preventDefault();
+      const text = e.clipboardData?.getData('text');
+      if (text && term.current) {
+        term.current.paste(text);
+      }
+    };
+
+    el.addEventListener('keydown', handleKeyDown);
+    el.addEventListener('paste', handlePaste);
+
     return () => {
       resizeObserver.disconnect();
+      el.removeEventListener('keydown', handleKeyDown);
+      el.removeEventListener('paste', handlePaste);
       if (unlistenData) unlistenData();
       if (unlistenReady) unlistenReady();
       term.current?.dispose();
